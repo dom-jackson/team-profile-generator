@@ -3,14 +3,12 @@ const Manager = require('./lib/manager');
 const Engineer = require('./lib/engineer');
 const Intern = require('./lib/intern');
 const inquirer = require("inquirer");
+const fs = require("fs");
 
-let managerQuestions;
-let teamMembers = [];
-
-managerQuestions = [
+let managerQuestions = [
     {
         type: "input",
-        name: "managerNamee",
+        name: "managerName",
         message: "What is the team Manager's name?"
     },
     {
@@ -37,6 +35,8 @@ const teamMemberQuestions = [
         choices: ["Engineer", "Intern", "I don't want to add any more team members"]
     } 
 ];
+
+let teamMembers = [];
 
 async function addManager() {
     const managerResponse = await inquirer.prompt(managerQuestions);
@@ -122,10 +122,43 @@ async function addTeamMember() {
                 default:
                     console.log("Invalid option selected");
                     addTeamMember();
-                    break;
     }
-        
+    const htmlTemplate = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./dist/style.css">
+    <title>Team Members</title>
+</head>
+<body>
+    <header> 
+        <h1>My Team</h1> 
+    </header>
+    <section class="team-members">
+        ${teamMembers.map(member => `
+            <div class="team-member">
+                <h2>${member.name} (${member.getRole()})</h2>
+                <p>ID: ${member.id}</p>
+                <p>Email: <a href="mailto:${member.email}">${member.email}</a></p>
+                ${member instanceof Manager ? `<p>Office Number: ${member.officeNumber}</p>` : ""}
+                ${member instanceof Engineer ? `<p>GitHub: <a href="https://github.com/${member.github}">${member.github}</a></p>` : ""}
+                ${member instanceof Intern ? `<p>School: ${member.school}</p>` : ""}
+            </div>
+        `).join("")}
+    </section>
+</body>
+</html>
+`;
+
+    fs.writeFile("index.html", htmlTemplate, "utf8", err => {
+        if (err) throw err;
+        console.log("The file has been saved!");
+    });
 }
+
+
 
 async function main() {
     await addManager();
@@ -134,4 +167,3 @@ async function main() {
 
 main();
 
-        
