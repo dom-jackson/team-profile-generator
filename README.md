@@ -26,7 +26,7 @@
   The following video is a demonstration of how this Team profile generator is operated.
   
   <video controls>
-  <source src=""
+  <source src=".\src\team-profile-generator-video.webm" type="video/webm">
 </video>
   
   ## License
